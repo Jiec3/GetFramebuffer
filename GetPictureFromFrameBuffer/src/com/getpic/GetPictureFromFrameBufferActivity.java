@@ -1,8 +1,6 @@
 
 package com.getpic;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,14 +27,7 @@ public class GetPictureFromFrameBufferActivity extends Activity {
         setContentView(R.layout.main);
         tx1 = (TextView) findViewById(R.id.tx1);
 
-        try {
-            Runtime.getRuntime().exec(new String[] {
-                    "su", "-c", "chmod 777 /dev/graphics/fb0"
-            });
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        CMDUtils.runWithRoot("chmod 777 /dev/graphics/fb0");
 
         DisplayMetrics dm = new DisplayMetrics();
         dm = getApplicationContext().getResources().getDisplayMetrics();

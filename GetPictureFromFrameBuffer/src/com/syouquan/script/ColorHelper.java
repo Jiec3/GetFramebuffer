@@ -13,6 +13,8 @@ import android.util.Log;
 
 public class ColorHelper {
 
+    private static final String TEMP_PATH = "/sdcard/mypi.bmp";
+
     public static String getColor(Context context, int x, int y) {
         return Integer.toHexString(getColorValueByNative(context, x, y));
     }
@@ -26,17 +28,16 @@ public class ColorHelper {
     }
 
     public static int getColorValueByNative(Context context, int x, int y) {
-
         DisplayMetrics dm = new DisplayMetrics();
         dm = context.getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
-        int i = ScriptEngine.nativeScreenShot(width, height, "/sdcard/mypi.bmp");
+        int i = ScriptEngine.nativeScreenShot(width, height, TEMP_PATH);
         int color = -1;
         if (i != -1) {
             try {
-                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream("/sdcard/mypi.bmp"));
+                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(TEMP_PATH));
                 color = bitmap.getPixel(x, y);
                 Log.i("test", "color : " + color);
             } catch (FileNotFoundException e) {
@@ -49,14 +50,6 @@ public class ColorHelper {
     }
 
     public static int getColorValue(Context context, final int x, final int y) {
-        int color = -1;
-        DisplayMetrics dm = new DisplayMetrics();
-        dm = context.getApplicationContext().getResources().getDisplayMetrics();
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-
-        // int i = ScriptEngine.nativeScreenShot(width, height,
-        // "/sdcard/mypic.bmp");
         CaptureScreenShot css = new CaptureScreenShot(context, null);
         css.startCaptureScreenShot();
         return css.getShotBitmap().getPixel(x, y);
