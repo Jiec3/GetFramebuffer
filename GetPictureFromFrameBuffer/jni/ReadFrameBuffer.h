@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_com_syouquan_script_ColorEngine_nativeScreenShot
-  (JNIEnv *, jobject, jint winWidth, jint winHeight, jstring sdcardPath);
+  (JNIEnv *, jobject, jstring path);
 
 JNIEXPORT jint JNICALL Java_com_syouquan_script_ColorEngine_nativeGetColor
   (JNIEnv *, jobject, jint x, jint y);

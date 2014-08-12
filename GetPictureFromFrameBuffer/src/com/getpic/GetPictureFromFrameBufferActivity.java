@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.syouquan.script.ColorEngine;
 import com.syouquan.script.ColorHelper;
 
 public class GetPictureFromFrameBufferActivity extends Activity {
@@ -47,6 +48,8 @@ public class GetPictureFromFrameBufferActivity extends Activity {
                 tx1.setText("color"
                         + ColorHelper.getColor(GetPictureFromFrameBufferActivity.this, width / 2,
                                 height / 2));
+
+                ColorEngine.nativeScreenShot("/sdcard/temp.bmp");
 
             }
         });
