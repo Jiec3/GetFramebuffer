@@ -1,14 +1,8 @@
 
 package com.syouquan.script;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class ColorHelper {
@@ -28,24 +22,27 @@ public class ColorHelper {
     }
 
     public static int getColorValueByNative(Context context, int x, int y) {
-        DisplayMetrics dm = new DisplayMetrics();
-        dm = context.getApplicationContext().getResources().getDisplayMetrics();
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
+        // DisplayMetrics dm = new DisplayMetrics();
+        // dm =
+        // context.getApplicationContext().getResources().getDisplayMetrics();
+        // int width = dm.widthPixels;
+        // int height = dm.heightPixels;
 
-        int i = ScriptEngine.nativeScreenShot(width, height, TEMP_PATH);
-        int color = -1;
-        if (i != -1) {
-            try {
-                Bitmap bitmap = BitmapFactory.decodeStream(new FileInputStream(TEMP_PATH));
-                color = bitmap.getPixel(x, y);
-                Log.i("test", "color : " + color);
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
+        // int i = ScriptEngine.nativeScreenShot(width, height, TEMP_PATH);
+        // int color = -1;
+        // if (i != -1) {
+        // try {
+        // Bitmap bitmap = BitmapFactory.decodeStream(new
+        // FileInputStream(TEMP_PATH));
+        // color = bitmap.getPixel(x, y);
+        // Log.i("test", "color : " + color);
+        // } catch (FileNotFoundException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // }
+        int color = ScriptEngine.nativeScreenShot(x, y, TEMP_PATH);
+        Log.e("test", "color = " + color);
         return color;
     }
 

@@ -2,7 +2,6 @@
 package com.getpic;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -35,14 +34,15 @@ public class GetPictureFromFrameBufferActivity extends Activity {
         final int height = dm.heightPixels;
 
         final int colors[] = {
-                Color.BLACK, Color.BLUE, Color.GRAY, Color.WHITE
+                R.color.common_gray_lighter, R.color.common_red, R.color.common_hint_color,
+                R.color.usercenter_common_background
         };
         final Button bt1 = (Button) findViewById(R.id.bt1);
         bt1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                tx1.setBackgroundColor(colors[(i++) % 4]);
+                tx1.setBackgroundColor(getResources().getColor(colors[(i++) % 4]));
 
                 tx1.setText("color"
                         + ColorHelper.getColor(GetPictureFromFrameBufferActivity.this, width / 2,

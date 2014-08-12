@@ -113,7 +113,7 @@ void * fb_bits(struct FB *fb)
 		 * xoffset. This is not the correct usage for xoffset, it should be added
 		 * to each line, not just once at the beginning */
 		offset = fb->vi.xoffset * bytespp;
-		offset += fb->vi.xres * fb->vi.yoffset * bytespp;
+		offset += fb->vi.xres_virtual * fb->vi.yoffset * bytespp;
 		bits = fb->bits + offset / sizeof(*fb->bits);
 	}
 	return bits;
@@ -150,13 +150,22 @@ static int fb_open(struct FB *fb)
 		return -1;
 	}
 
-	fb->fd = open("/dev/graphics/fb0", O_RDONLY);
+	fb->fd = open("/dev/graphics/fb0", O_RDONLY | O_RDWR);
 	if (fb->fd < 0)
 	{
 		printf("open(\"/dev/graphics/fb0\") failed!\n");
 		LOGI("---open(\"/dev/graphics/fb0\") failed!---");
 		return -1;
 	}
+
+	struct fb_var_screeninfo vi;
+	vi.xres = 1088;
+	vi.yres = 1800;
+	vi.xres_virtual = 1088;
+	vi.yres_virtual = 4000;
+
+	ioctl(fb->fd, FBIOPUT_VSCREENINFO, vi);
+
 
 	if (ioctl(fb->fd, FBIOGET_FSCREENINFO, &fb->fi) < 0)
 	{
@@ -185,6 +194,8 @@ static int fb_open(struct FB *fb)
 		LOGI("---FBIOGET_VSCREENINFO failed!---");
 		goto fail;
 	}
+
+
 
 	/*打印信息*/
 	{
@@ -283,13 +294,21 @@ int savePic(const char *filePath)
 	uint8_t *rgb24;
 	rgb24 = (uint8_t *) malloc(w * h * 4);
 	int i=0;
+
+
 	for (;i<w*h;i++)
 	{
 		uint32_t pixel32 = ((uint32_t *)fb_bits(&g_fb))[i];
 		// in rgb24 color max is 2^8 per channel
-		rgb24[3*i+0]   = (pixel32 & 0x000000FF); 		//Blue
-		rgb24[3*i+1]   = (pixel32 & 0x0000FF00) >> 8;	//Green
-		rgb24[3*i+2]   = (pixel32 & 0x00FF0000) >> 16; 	//Red
+		if (1) {
+			rgb24[3*i+0]   = (pixel32 & 0x000000FF); 		//Blue
+			rgb24[3*i+1]   = (pixel32 & 0x0000FF00) >> 8;	//Green
+			rgb24[3*i+2]   = (pixel32 & 0x00FF0000) >> 16; 	//Red
+		} else {
+			rgb24[3*i+0]   = (pixel32 & 0x0000FF00) >> 8; 		//Blue
+			rgb24[3*i+1]   = (pixel32 & 0x00FF0000) >> 16;	//Green
+			rgb24[3*i+2]   = (pixel32 & 0xFF000000) >> 24; 	//Red
+		}
 	}
 
 	//save RGB 24 BitmapABGR  BGRA
@@ -339,23 +358,64 @@ int savePic(const char *filePath)
 		// fill line linebuf with the image data for that line
 		for( x =0 ; x < w; x++ )
 		{
-			*(linebuf+x*bytes_per_pixel) = *(rgb24 + (x+line*w)*bytes_per_pixel+2);
-			*(linebuf+x*bytes_per_pixel+1) = *(rgb24 + (x+line*w)*bytes_per_pixel+1);
-			*(linebuf+x*bytes_per_pixel+2) = *(rgb24 + (x+line*w)*bytes_per_pixel+0);
+			if (g_fb.vi.blue.offset == 0)
+			{
+				*(linebuf+x*bytes_per_pixel) = *(rgb24 + (x+line*w)*bytes_per_pixel+0);
+				*(linebuf+x*bytes_per_pixel+1) = *(rgb24 + (x+line*w)*bytes_per_pixel+1);
+				*(linebuf+x*bytes_per_pixel+2) = *(rgb24 + (x+line*w)*bytes_per_pixel+2);
+			} else
+			{
+				*(linebuf+x*bytes_per_pixel) = *(rgb24 + (x+line*w)*bytes_per_pixel+2);
+				*(linebuf+x*bytes_per_pixel+1) = *(rgb24 + (x+line*w)*bytes_per_pixel+1);
+				*(linebuf+x*bytes_per_pixel+2) = *(rgb24 + (x+line*w)*bytes_per_pixel);
+			}
+
 		}
 		// remember that the order is BGR and if width is not a multiple
 		// of 4 then the last few bytes may be unused
 		fwrite(linebuf, 1, bytesPerLine, bmpfile);
 	}
+	int pointx = 400, pointy = 400;
+	LOGI("color r = %d, g = %d, b = %d",
+			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+0),
+			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+1),
+			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+2));
 	fclose(bmpfile);
+}
+
+int getColor(int pointx, int pointy)
+{
+	int w = g_fb.vi.xres_virtual, h = g_fb.vi.yres, depth = g_fb.vi.bits_per_pixel;
+	int r, g, b;
+
+	uint32_t pixel32 = ((uint32_t *)fb_bits(&g_fb))[(pointy - 1) * g_fb.vi.xres + pointx];
+
+	if (g_fb.vi.blue.offset == 0) {
+		//BGRA
+		b   = (pixel32 & 0x000000FF); 		//Blue
+		g   = (pixel32 & 0x0000FF00) >> 8;	//Green
+		r   = (pixel32 & 0x00FF0000) >> 16; 	//Red
+	} else {
+		//ABGR
+		b   = (pixel32 & 0x0000FF00) >> 8; 		//Blue
+		g   = (pixel32 & 0x00FF0000) >> 16;	//Green
+		r   = (pixel32 & 0xFF000000) >> 24; 	//Red
+	}
+
+	//返回到java层的时候转换成统一的BGRA顺序格式
+	int color = 0xFF000000 + (r << 16) + (g << 8) + b;
+	LOGI("color = %d", color);
+	LOGI("r = %d, g = %d, b = %d", r, g, b);
+
+	return color;
 }
 
 //-------------------------------------------------------------------
 JNIEXPORT jint JNICALL Java_com_syouquan_script_ScriptEngine_nativeScreenShot
-(JNIEnv *env, jobject thiz, jint width, jint height, jstring path)
+(JNIEnv *env, jobject thiz, jint x, jint y, jstring path)
 {
 	LOGI("---进入到屏幕截图本地调用函数！---");
-	char *filePath = (char*)(*env)->GetStringUTFChars(env, path, NULL);
+
 	int i = 0;
 
 	i = fb_create();
@@ -365,16 +425,21 @@ JNIEXPORT jint JNICALL Java_com_syouquan_script_ScriptEngine_nativeScreenShot
 		return -1;
 	}
 
-	i = savePic(filePath);
+	int color = getColor(x, y);
+//	char *filePath = (char*)(*env)->GetStringUTFChars(env, path, NULL);
+//	i = savePic(filePath);
 
 	fb_destory(&g_fb);
-	if(i == -1)
-	{
-		LOGI("---生成文件失败！---");
-		return -1;
-	}
-	LOGI("---生成文件成功！---");
-	return 0;
+
+	return color;
+
+//	if(i == -1)
+//	{
+//		LOGI("---生成文件失败！---");
+//		return -1;
+//	}
+//	LOGI("---生成文件成功！---");
+//	return 0;
 }
 
 #endif//#ifndef WIN32
