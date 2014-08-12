@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 基本颜色 -->
+    <color name="common_white">#ffffffff</color>
+    <color name="common_white_lighter">#aaffffff</color>
+    <color name="common_black">#ff000000</color>
+    <color name="common_red">#ffff0000</color>
+    <color name="common_green">#ff00ff00</color>
+    <color name="common_blue">#ff0000ff</color>
+
+    <!-- 透明颜色 -->
+    <color name="common_transparent">#00000000</color>
+    <!-- 蒙层的半透明颜色 -->
+    <color name="common_cover_color_translucence">#aa000000</color>
+    <!-- 半透明颜色 -->
+    <color name="common_translucence">#55000000</color>
+    <!-- 色值更浅的半透明颜色 -->
+    <color name="common_translucence_lighter">#26000000</color>
+
+    <!-- 点击颜色，一般用于listView,GridView的item点击效果 -->
+    <color name="common_item_pressed">#ffe4e4e4</color>
+    <color name="common_item_cache">@color/common_transparent</color>
+    <!-- 分隔线颜色 -->
+    <color name="common_item_divider">#ffdee3e7</color>
+
+    <!-- 通用按钮相关颜色 -->
+    <color name="common_btn_bg_default">#ffff6f00</color>
+    <color name="common_btn_bg_pressed">#ffe96500</color>
+
+    <!-- 通用界面底色 -->
+    <color name="common_background">#eaeff3</color>
+    <!-- 背景色（浅色） -->
+    <color name="common_background_light">#fff6f6f6</color>
+    <!-- 灰色（深色），一般用于标题 -->
+    <color name="common_gray_darker">#2c2c2c</color>
+    <!-- 灰色（浅色），一般用于二级标题， -->
+    <color name="common_gray_lighter">#4d4d4d</color>
+    <!-- 灰色（更浅的灰色），说明性文字，介绍性文字，像分类、文件大小，周下载等 -->
+    <color name="common_gray_more_lighter">#767676</color>
+	<!-- hint文字的颜色 -->
+	<color name="common_hint_color">#cbced1</color>
+    
+    <!-- 通用标题栏底色 -->
+    <color name="common_title_background">#37BC9B</color>
+    <!-- 搜索框内默认文字颜色 -->
+    <color name="common_searchbar_textcolor">#55000000</color>
+    <!-- Tabindicator的标签色 -->
+    <color name="hometitle_tabindicator_textcolor">#2c2c2c</color>
+    <color name="common_btn_pressed">#2c2c2c</color>
+
+    <!-- 个人中心颜色配置 -->
+    <!-- 界面底色色值 -->
+    <color name="usercenter_common_background">#252932</color>
+    <!-- 标题栏底色 -->
+    <color name="usercenter_title_background">#323743</color>
+    <!-- 条目点击时底色 -->
+    <color name="usercenter_selected_background">#1f232a</color>
+    <!-- 文字颜色 -->
+    <color name="usercenter_common_textcolor">#7d818b</color>
+
+    <!-- 设置界面配置 -->
+    <!-- seekbar未选中 -->
+    <color name="setting_seekbar_bg">#b9c2c9</color>
+    <!-- 游戏详情界面 -->
+    <!-- 下载进度框的主进度颜色 -->
+    <color name="gamedetail_seekbar_progress">#18a17f</color>
+    <!-- 游戏详情，已关注按钮的字体颜色 -->
+    <color name="gamedetail_has_cared_text">#a7acb1</color>
+    <!-- 开服标题栏背景-->
+    <color name="server_title_bg">#dbe0e4</color>
+    
+    <!-- footerview点击颜色 -->
+    <color name="footer_view_pressed">#11000000</color>
+    <!-- 分类名背景颜色 -->
+    <color name="game_class_bg">#c6000000</color>
+
+    
+    <!-- 字母控件 -->
+    <color name="letter_list_select_bg">#ccd2d6</color>
+    <!-- 趋势降的字体颜色 -->
+    <color name="trend_down_text_color">#e76253</color>
+    <!-- 更多平台弹窗的最底部背景颜色 -->
+    <color name="more_platform_dialog_bottom_bg">#f6f8f9</color>
+    <!-- 清理内存图标的灰色-->
+    <color name="progressbar_gray">#ff828384</color>
+    <!-- 首页平台列表的背景颜色-->
+    <color name="platform_list_bg">#eaeff3</color>
+</resources>
