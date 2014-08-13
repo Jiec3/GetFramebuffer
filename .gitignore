@@ -1,0 +1,4 @@
+*.class
+GetPictureFromFrameBuffer/bin/*
+GetPictureFromFrameBuffer/gen/*
+GetPictureFromFrameBuffer/obj/*
