@@ -7,8 +7,6 @@ import android.util.Log;
 
 public class ColorHelper {
 
-    private static final String TEMP_PATH = "/sdcard/mypi.bmp";
-
     public static String getColor(Context context, int x, int y) {
         return Integer.toHexString(getColorValueByNative(context, x, y));
     }

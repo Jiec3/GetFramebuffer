@@ -234,6 +234,19 @@ static int fb_open(struct FB *fb)
 		LOGD("====== height : %d",  fb->vi.height);
 		// width of picture in mm 毫米
 		LOGD("====== width : %d",  fb->vi.width);
+
+
+		LOGD("====== left_margin : %d",  fb->vi.left_margin);
+		LOGD("====== right_margin : %d",  fb->vi.right_margin);
+		LOGD("====== upper_margin : %d",  fb->vi.upper_margin);
+		LOGD("====== lower_margin : %d",  fb->vi.lower_margin);
+		LOGD("====== hsync_len : %d",  fb->vi.hsync_len);
+		LOGD("====== vsync_len : %d",  fb->vi.vsync_len);
+		LOGD("====== sync : %d",  fb->vi.sync);
+
+		LOGD("====== pixclock : %d",  fb->vi.pixclock);
+		LOGD("====== accel_flags : %d",  fb->vi.accel_flags);
+
 		// UP 0
 		// CW 1
 		// UD 2
@@ -300,14 +313,14 @@ int savePic(const char *filePath)
 	{
 		uint32_t pixel32 = ((uint32_t *)fb_bits(&g_fb))[i];
 		// in rgb24 color max is 2^8 per channel
-		if (1) {
+		if (g_fb.vi.blue.offset == 0) {
 			rgb24[3*i+0]   = (pixel32 & 0x000000FF); 		//Blue
 			rgb24[3*i+1]   = (pixel32 & 0x0000FF00) >> 8;	//Green
 			rgb24[3*i+2]   = (pixel32 & 0x00FF0000) >> 16; 	//Red
 		} else {
-			rgb24[3*i+0]   = (pixel32 & 0x0000FF00) >> 8; 		//Blue
-			rgb24[3*i+1]   = (pixel32 & 0x00FF0000) >> 16;	//Green
-			rgb24[3*i+2]   = (pixel32 & 0xFF000000) >> 24; 	//Red
+			rgb24[3*i+2]   = (pixel32 & 0x000000FF); 		//Blue
+			rgb24[3*i+1]   = (pixel32 & 0x0000FF00) >> 8;	//Green
+			rgb24[3*i+0]   = (pixel32 & 0x00FF0000) >> 16; 	//Red
 		}
 	}
 
@@ -358,28 +371,15 @@ int savePic(const char *filePath)
 		// fill line linebuf with the image data for that line
 		for( x =0 ; x < w; x++ )
 		{
-			if (g_fb.vi.blue.offset == 0)
-			{
 				*(linebuf+x*bytes_per_pixel) = *(rgb24 + (x+line*w)*bytes_per_pixel+0);
 				*(linebuf+x*bytes_per_pixel+1) = *(rgb24 + (x+line*w)*bytes_per_pixel+1);
 				*(linebuf+x*bytes_per_pixel+2) = *(rgb24 + (x+line*w)*bytes_per_pixel+2);
-			} else
-			{
-				*(linebuf+x*bytes_per_pixel) = *(rgb24 + (x+line*w)*bytes_per_pixel+2);
-				*(linebuf+x*bytes_per_pixel+1) = *(rgb24 + (x+line*w)*bytes_per_pixel+1);
-				*(linebuf+x*bytes_per_pixel+2) = *(rgb24 + (x+line*w)*bytes_per_pixel);
-			}
-
 		}
 		// remember that the order is BGR and if width is not a multiple
 		// of 4 then the last few bytes may be unused
 		fwrite(linebuf, 1, bytesPerLine, bmpfile);
 	}
-	int pointx = 400, pointy = 400;
-	LOGI("color r = %d, g = %d, b = %d",
-			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+0),
-			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+1),
-			*(rgb24 + (pointx+pointy*w)*bytes_per_pixel+2));
+
 	fclose(bmpfile);
 }
 
@@ -397,9 +397,10 @@ int getColor(int pointx, int pointy)
 		r   = (pixel32 & 0x00FF0000) >> 16; 	//Red
 	} else {
 		//ABGR
-		b   = (pixel32 & 0x0000FF00) >> 8; 		//Blue
-		g   = (pixel32 & 0x00FF0000) >> 16;	//Green
-		r   = (pixel32 & 0xFF000000) >> 24; 	//Red
+		LOGI("ABGR");
+		r   = (pixel32 & 0x000000FF);//Red
+		g   = (pixel32 & 0x0000FF00) >> 8; 		//Blue
+		b   = (pixel32 & 0x00FF0000) >> 16;	//Green
 	}
 
 	//返回到java层的时候转换成统一的BGRA顺序格式
